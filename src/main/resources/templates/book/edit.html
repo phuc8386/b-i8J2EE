@@ -1,0 +1,170 @@
+<!doctype html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{_layout}"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sửa Sách</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="page-header">
+        <h2 class="mb-1">
+          <i class="bi bi-pencil-square me-2"></i>Chỉnh Sửa Sách
+        </h2>
+        <p class="mb-0 opacity-75">Cập nhật thông tin sách</p>
+      </div>
+
+      <div class="card form-card">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0">
+            <i class="bi bi-file-earmark-text me-2 text-warning"></i>Thông Tin
+            Sách
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <form
+            th:action="@{/books/update/{id}(id=${book.id})}"
+            th:object="${book}"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="mb-4">
+              <label for="title" class="form-label"
+                ><i class="bi bi-book me-1"></i>Tên Sách
+                <span class="text-danger">*</span></label
+              >
+              <input
+                class="form-control"
+                type="text"
+                th:field="*{title}"
+                id="title"
+                placeholder="Nhập tên sách"
+              />
+              <div
+                class="text-danger small mt-1"
+                th:if="${#fields.hasErrors('title')}"
+                th:errors="*{title}"
+              ></div>
+            </div>
+
+            <div class="mb-4">
+              <label for="author" class="form-label"
+                ><i class="bi bi-person me-1"></i>Tác Giả
+                <span class="text-danger">*</span></label
+              >
+              <input
+                class="form-control"
+                type="text"
+                th:field="*{author}"
+                id="author"
+                placeholder="Nhập tên tác giả"
+              />
+              <div
+                class="text-danger small mt-1"
+                th:if="${#fields.hasErrors('author')}"
+                th:errors="*{author}"
+              ></div>
+            </div>
+
+            <div class="mb-4">
+              <label for="price" class="form-label"
+                ><i class="bi bi-tag me-1"></i>Giá (VNĐ)
+                <span class="text-danger">*</span></label
+              >
+              <input
+                class="form-control"
+                type="number"
+                th:field="*{price}"
+                id="price"
+                placeholder="Nhập giá sách"
+                min="1"
+              />
+              <div
+                class="text-danger small mt-1"
+                th:if="${#fields.hasErrors('price')}"
+                th:errors="*{price}"
+              ></div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label"
+                ><i class="bi bi-image me-1"></i>Hình Ảnh Bìa</label
+              >
+              <!-- Anh hien tai -->
+              <div
+                th:if="${book.image != null and !book.image.isEmpty()}"
+                class="mb-2"
+              >
+                <p class="text-muted small mb-1">Ảnh hiện tại:</p>
+                <img
+                  th:src="${book.image}"
+                  alt="Current"
+                  style="
+                    height: 100px;
+                    border-radius: 8px;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+                  "
+                />
+              </div>
+              <div
+                class="upload-area"
+                onclick="document.getElementById('imageFile').click()"
+              >
+                <i class="bi bi-cloud-upload"></i>
+                <p class="mb-1 mt-2 fw-semibold">
+                  Chọn ảnh mới (để trống giữ ảnh cũ)
+                </p>
+                <p class="mb-0 text-muted small">
+                  PNG, JPG, JPEG – Tối đa 10MB
+                </p>
+              </div>
+              <input
+                type="file"
+                id="imageFile"
+                name="imageFile"
+                accept="image/*"
+                class="d-none"
+              />
+              <div class="text-center">
+                <img id="imagePreview" src="" alt="Preview" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="category" class="form-label"
+                ><i class="bi bi-collection me-1"></i>Danh Mục
+                <span class="text-danger">*</span></label
+              >
+              <select th:field="*{category}" class="form-select" id="category">
+                <option value="">-- Chọn danh mục --</option>
+                <option
+                  th:each="cat : ${categories}"
+                  th:value="${cat.id}"
+                  th:text="${cat.name}"
+                  th:selected="${book.category != null and book.category.id == cat.id}"
+                ></option>
+              </select>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-submit">
+                <i class="bi bi-check-circle me-1"></i>Cập Nhật
+              </button>
+              <a
+                th:href="@{/books}"
+                class="btn btn-outline-secondary"
+                style="border-radius: 10px"
+              >
+                <i class="bi bi-arrow-left me-1"></i>Quay Lại
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

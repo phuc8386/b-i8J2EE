@@ -1,0 +1,130 @@
+<!doctype html>
+<html
+  lang="vi"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{_layout}"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Giỏ Hàng</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-1"><i class="bi bi-cart3 me-2"></i>Giỏ Hàng</h2>
+          <p class="mb-0 opacity-75">Các sản phẩm bạn đã chọn</p>
+        </div>
+        <a th:href="@{/books}" class="btn btn-outline-light">
+          <i class="bi bi-arrow-left me-1"></i>Tiếp tục mua sắm
+        </a>
+      </div>
+
+      <!-- Giỏ hàng trống -->
+      <div th:if="${#lists.isEmpty(cartItems)}" class="card text-center py-5">
+        <div class="card-body">
+          <i class="bi bi-cart-x" style="font-size: 4rem; color: #ccc;"></i>
+          <h4 class="mt-3 text-muted">Giỏ hàng của bạn đang trống</h4>
+          <a th:href="@{/books}" class="btn btn-add mt-3">
+            <i class="bi bi-shop me-1"></i>Mua sắm ngay
+          </a>
+        </div>
+      </div>
+
+      <!-- Câu 6: Danh sách sản phẩm trong giỏ -->
+      <div th:unless="${#lists.isEmpty(cartItems)}">
+        <div class="card mb-3">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Hình Ảnh</th>
+                    <th>Tên Sách</th>
+                    <th class="text-end">Giá</th>
+                    <th class="text-center">Số Lượng</th>
+                    <th class="text-end">Thành Tiền</th>
+                    <th class="text-center">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="item, stat : ${cartItems}">
+                    <td th:text="${stat.count}" class="fw-bold text-muted"></td>
+                    <td>
+                      <img th:if="${item.image != null and !item.image.isEmpty()}"
+                           th:src="${item.image}" alt="Book" class="book-img" />
+                      <img th:unless="${item.image != null and !item.image.isEmpty()}"
+                           src="https://placehold.co/70x90?text=No+Image" alt="No Image" class="book-img" />
+                    </td>
+                    <td><span class="fw-semibold" th:text="${item.title}"></span></td>
+                    <td class="text-end"
+                        th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + ' đ'"></td>
+                    <td class="text-center" style="width: 160px;">
+                      <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center justify-content-center gap-1">
+                        <input type="hidden" name="bookId" th:value="${item.bookId}" />
+                        <button type="submit" name="quantity" th:value="${item.quantity - 1}"
+                                class="btn btn-sm btn-outline-secondary px-2">−</button>
+                        <span class="fw-bold mx-2" th:text="${item.quantity}"></span>
+                        <button type="submit" name="quantity" th:value="${item.quantity + 1}"
+                                class="btn btn-sm btn-outline-secondary px-2">+</button>
+                      </form>
+                    </td>
+                    <td class="text-end fw-bold"
+                        th:text="${#numbers.formatInteger(item.subtotal, 0, 'COMMA')} + ' đ'"
+                        style="color: #ff006e;"></td>
+                    <td class="text-center">
+                      <form th:action="@{/cart/remove}" method="post" class="d-inline">
+                        <input type="hidden" name="bookId" th:value="${item.bookId}" />
+                        <button type="submit" class="btn btn-del btn-sm"
+                                onclick="return confirm('Xóa sách này khỏi giỏ hàng?')">
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr style="background: rgba(255,0,110,0.05);">
+                    <td colspan="5" class="text-end fw-bold fs-5">Tổng cộng:</td>
+                    <td class="text-end fw-bold fs-5" style="color: #ff006e;"
+                        th:text="${#numbers.formatInteger(total, 0, 'COMMA')} + ' đ'"></td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a th:href="@{/books}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Tiếp tục mua
+          </a>
+          <a th:href="@{/cart/checkout}" class="btn btn-checkout">
+            <i class="bi bi-bag-check-fill me-1"></i>Đặt Hàng
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .btn-checkout {
+        background: linear-gradient(135deg, #ff006e, #7928ca);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 0.7rem 1.8rem;
+        border-radius: 12px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+      }
+      .btn-checkout:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
+        color: white;
+      }
+    </style>
+  </body>
+</html>
